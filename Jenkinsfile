@@ -5,7 +5,7 @@ pipeline{
         nodejs 'node23'
     }
     environment{
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = "${tool 'sonar-scanner'}"
     }
     stages{
         stage('Clean Workspace'){
@@ -46,19 +46,18 @@ pipeline{
         }
         stage('Trivy File Scan'){
             steps{
-                sh "trivy fs . > trivy.txt"
+                sh "trivy fs . | tee trivy.txt"
             }
         }
         stage('Build Docker Image'){
             steps{
-                sh "docker build -t briarheart1096/zomato ."
+                sh "docker build -t briarheart1096/zomato:latest ."
             }
         }
         stage("Push Image to Dockerhub"){
             steps{
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker tag briarheart1096/zomato briarheart1096/zomato:latest"
                         sh "docker push briarheart1096/zomato:latest"
                     }
                 }

@@ -45,6 +45,7 @@ pipeline{
                 }
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit -n', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
         }
         stage('Trivy File Scan'){
             steps{
@@ -117,4 +118,4 @@ post {
         }
     }
 }
-}
+

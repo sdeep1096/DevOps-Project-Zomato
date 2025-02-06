@@ -38,11 +38,13 @@ pipeline{
                 sh "npm install"
             }
         }
-        stage('OWASP FS SCAN'){
+        stage('OWASP FS SCAN') {
             steps {
+                script {
+                    sh 'dependency-check.sh --updateOnly || true'
+                }
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit -n', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
         }
         stage('Trivy File Scan'){
             steps{
@@ -81,6 +83,16 @@ pipeline{
         }
     }
 post {
+    unstable {
+            script {
+                echo "OWASP Dependency-Check found vulnerabilities. Marking build as unstable."
+            }
+        }
+        failure {
+            script {
+                echo "OWASP Dependency-Check failed due to missing database or another critical issue."
+            }
+        }
     always {
         emailext attachLog: true,
             subject: "'${currentBuild.result}'",

@@ -372,13 +372,31 @@ To deploy an application with ArgoCD, you can follow these steps, which I'll out
 
 1. **Install ArgoCD:**
 
-   You can install ArgoCD on your Kubernetes cluster by following the instructions provided in the [EKS Workshop](https://archive.eksworkshop.com/intermediate/290_argocd/install/) documentation.
+   pre-requisites: Helm must be installed on system
 
-2. **Set Your GitHub Repository as a Source:**
+   add helm repo and helm chart install -
+   helm repo add argo https://argoproj.github.io/argo-helm
+   helm repo update
+   kubectl create namespace argocd
+   helm install argocd argo/argo-cd --namespace argocd
+
+   expose ArgoCD API server via Load Balancer:
+   kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+   find external IP for ArgoCD API server:
+   kubectl get svc argocd-server -n argocd
+
+   get admin password (first time for Argo CD):
+   kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode
+
+
+
+
+3. **Set Your GitHub Repository as a Source:**
 
    After installing ArgoCD, you need to set up your GitHub repository as a source for your application deployment. This typically involves configuring the connection to your repository and defining the source for your ArgoCD application. The specific steps will depend on your setup and requirements.
 
-3. **Create an ArgoCD Application:**
+4. **Create an ArgoCD Application:**
    - `name`: Set the name for your application.
    - `destination`: Define the destination where your application should be deployed.
    - `project`: Specify the project the application belongs to.

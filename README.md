@@ -1,5 +1,7 @@
 # **DevOps Project: ZOMATO Clone App Deployment**
 
+code credit : KastroVKiran
+
 # ** Resources Used **
 - 2 * Droplets ( 4vcpu/ 8GB memory/ Ubuntu 24.04 LTS)
 - Digital Ocean Kubernetes Cluster (Cluster capacity - 3 * droplets (4GB memory/2vcpus)
@@ -373,22 +375,28 @@ To deploy an application with ArgoCD, you can follow these steps, which I'll out
 1. **Install ArgoCD:**
 
    pre-requisites: Helm must be installed on system
-
+```
    add helm repo and helm chart install -
    helm repo add argo https://argoproj.github.io/argo-helm
    helm repo update
    kubectl create namespace argocd
    helm install argocd argo/argo-cd --namespace argocd
-
+```
+   
    expose ArgoCD API server via Load Balancer:
+```
    kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-
+```
+   
    find external IP for ArgoCD API server:
+```   
    kubectl get svc argocd-server -n argocd
+```
 
    get admin password (first time for Argo CD):
+```
    kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode
-
+```
 
 
 
